@@ -66,6 +66,15 @@ def clear_screen() -> None:
     os.system(clear)
 
 
+def get_git_hub_import_options() -> dict[str, str]:
+    return {
+        'github_username': get_user_input('Имя пользователя в GitHub'),
+        'preserve_timestamp': get_user_input(
+            'Сохранить временные метки? [Д/н]',
+            required=False) in ('Д', 'д', None),
+    }
+
+
 def loop() -> None:
     options = {
         'A': Option('Добавить закладку.',
@@ -78,6 +87,9 @@ def loop() -> None:
         'D': Option('Удалить закладку.',
                     commands.DeleteBookmarkCommand(),
                     prep_call=get_bookmarks_id_for_deletion),
+        'G': Option('Импортировать звёзды GitHub',
+                    commands.ImportGitHubStarsCommand(),
+                    prep_call=get_git_hub_import_options),
         'Q': Option('Выйти.', commands.QuitCommand()),
 
         }

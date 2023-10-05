@@ -67,7 +67,7 @@ class ImportGitHubStarsCommand:
             'notes': repo['description'],
         }
 
-    def execute(self, data):
+    def execute(self, data: dict[str, str]) -> str:
         bookmarks_imported = 0
 
         github_username = data['github_username']

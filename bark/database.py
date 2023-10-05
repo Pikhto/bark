@@ -43,7 +43,7 @@ class DataBaseManager:
         self._execute(stm, column_values)
 
     def delete(self, table_name: str, criteria: dict[str, str]) -> None:
-        placeholders: str = [f'{column} = ?' for column in criteria.keys()]
+        placeholders = [f'{column} = ?' for column in criteria.keys()]
         delete_criteria = ' AND '.join(placeholders)
         crt = tuple(criteria.values())
 
@@ -73,7 +73,6 @@ class DataBaseManager:
     def update(self, table_name: str,
                fields: dict[str, str],
                criteria: dict[str, str]) -> None:
-
         placeholders = ', '.join([f'{col} = ?' for col in fields.keys()])
         update_criteria = ', '.join([f'{col} = ?' for col in criteria.keys()])
         stm = f'''

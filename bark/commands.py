@@ -100,3 +100,21 @@ class ImportGitHubStarsCommand:
                     )
         return f'Импортировано {bookmarks_imported} закладок, '\
             'из помеченных звёздами репо'
+
+
+class UpdateBookmarksCommand:
+    def __init__(self, criteria: str) -> None:
+        self.criteria = criteria
+
+    def execute(self,
+                fields: dict[str, str]) -> str:
+        criteria = {self.criteria: fields.pop(self.criteria)}
+        filled_fields = {field: value for field, value in fields.items()
+                         if value}
+        if not filled_fields:
+            return 'Упс, ни чего не обновилось!'
+
+        timestamp = datetime.datetime.utcnow().isoformat()
+        filled_fields['date_added'] = timestamp
+        db.update('bookmarks', filled_fields, criteria)
+        return 'Вы обновили закладку!'

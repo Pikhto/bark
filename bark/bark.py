@@ -75,6 +75,15 @@ def get_git_hub_import_options() -> dict[str, str]:
     }
 
 
+def get_update_bookmark_data() -> dict[str, str]:
+    return {
+        'id': get_user_input('Введите номер закладки'),
+        'title': get_user_input('Название', required=False),
+        'url': get_user_input('URL', required=False),
+        'notes': get_user_input('Примечания', required=False)
+        }
+
+
 def loop() -> None:
     options = {
         'A': Option('Добавить закладку.',
@@ -84,6 +93,9 @@ def loop() -> None:
                     commands.ListBookmarksCommand()),
         'T': Option('Показать список закладок по заголовку.',
                     commands.ListBookmarksCommand(order_by='title')),
+        'U': Option('Обновить закладку',
+                    commands.UpdateBookmarksCommand(criteria='id'),
+                    prep_call=get_update_bookmark_data),
         'D': Option('Удалить закладку.',
                     commands.DeleteBookmarkCommand(),
                     prep_call=get_bookmarks_id_for_deletion),

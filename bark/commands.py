@@ -31,27 +31,32 @@ class CreateBookmarksTableCommand:
 class AddBookmarksCommand:
     def execute(self,
                 data: dict[str, str],
-                timestamp: str | None = None) -> str:
+                timestamp: str | None = None) -> tuple[bool, None]:
         if timestamp is None:
             timestamp = datetime.datetime.utcnow().isoformat()
         data['date_added'] = timestamp
         db.add('bookmarks', data)
-        return 'Закладка добавлена!'
+
+        return True, None
 
 
 class ListBookmarksCommand:
     def __init__(self, order_by='date_added') -> None:
         self.order_by = order_by
 
-    def execute(self) -> list[Any]:
+    def execute(self) -> tuple[bool, list[Any]]:
+        status = True
         select = db.select('bookmarks', order_by=self.order_by)
-        return select.fetchall()
+        result = select.fetchall()
+
+        return status, result
 
 
 class DeleteBookmarkCommand:
-    def execute(self, data: dict[str, str]) -> str:
+    def execute(self, data: dict[str, str]) -> tuple[bool, None]:
         db.delete('bookmarks', {'id': data})
-        return 'Закладка удалена!'
+
+        return True, None
 
 
 class QuitCommand:
@@ -67,7 +72,7 @@ class ImportGitHubStarsCommand:
             'notes': repo['description'],
         }
 
-    def execute(self, data: dict[str, str]) -> str:
+    def execute(self, data: dict[str, str]) -> tuple[bool, int]:
         bookmarks_imported = 0
 
         github_username = data['github_username']
@@ -98,8 +103,8 @@ class ImportGitHubStarsCommand:
                     self._extract_bookmark_info(repo),
                     timestamp=timestamp
                     )
-        return f'Импортировано {bookmarks_imported} закладок, '\
-            'из помеченных звёздами репо'
+
+        return True, bookmarks_imported
 
 
 class UpdateBookmarksCommand:
@@ -107,14 +112,16 @@ class UpdateBookmarksCommand:
         self.criteria = criteria
 
     def execute(self,
-                fields: dict[str, str]) -> str:
+                fields: dict[str, str]) -> tuple[bool, None]:
         criteria = {self.criteria: fields.pop(self.criteria)}
         filled_fields = {field: value for field, value in fields.items()
                          if value}
+
         if not filled_fields:
-            return 'Упс, ни чего не обновилось!'
+            return False, None
 
         timestamp = datetime.datetime.utcnow().isoformat()
         filled_fields['date_added'] = timestamp
         db.update('bookmarks', filled_fields, criteria)
-        return 'Вы обновили закладку!'
+
+        return True, None

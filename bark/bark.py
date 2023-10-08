@@ -8,16 +8,28 @@ import commands
 class Option:
     def __init__(self, menu_option: str,
                  command: commands.Command,
-                 prep_call: Callable | None = None) -> None:
+                 prep_call: Callable | None = None,
+                 success_message: str = '{result}') -> None:
         self.menu_option = menu_option
         self.command = command
         self.prep_call = prep_call
+        self.success_message = success_message
 
     def choose(self) -> None:
         data = self.prep_call() if self.prep_call else None
-        message = self.command.execute(data) if data \
+        success, result = self.command.execute(data) if data \
             else self.command.execute()
-        print(message)
+
+        formatted_result = ''
+
+        if isinstance(result, list):
+            for bookmark in result:
+                formatted_result += '\n' + format_bookmark(bookmark)
+        else:
+            formatted_result = result
+
+        if success:
+            print(self.success_message.format(result=formatted_result))
 
     def __str__(self) -> str:
         return self.menu_option
@@ -71,7 +83,7 @@ def get_git_hub_import_options() -> dict[str, str]:
         'github_username': get_user_input('Имя пользователя в GitHub'),
         'preserve_timestamp': get_user_input(
             'Сохранить временные метки? [Д/н]',
-            required=False) in ('Д', 'д', None),
+            required=False) in ('Д', 'д', 'd', 'D', None),
     }
 
 
@@ -84,24 +96,34 @@ def get_update_bookmark_data() -> dict[str, str]:
         }
 
 
+def format_bookmark(bookmark):
+    return '\t'.join(str(field) if field else ''
+                     for field in bookmark)
+
+
 def loop() -> None:
     options = {
         'A': Option('Добавить закладку.',
                     commands.AddBookmarksCommand(),
-                    prep_call=get_new_bookmark_data),
+                    prep_call=get_new_bookmark_data,
+                    success_message='Закладка добавлена!'),
         'B': Option('Показать список закладок по дате.',
                     commands.ListBookmarksCommand()),
         'T': Option('Показать список закладок по заголовку.',
                     commands.ListBookmarksCommand(order_by='title')),
         'U': Option('Обновить закладку',
                     commands.UpdateBookmarksCommand(criteria='id'),
-                    prep_call=get_update_bookmark_data),
+                    prep_call=get_update_bookmark_data,
+                    success_message='Закладка обновлена!'),
         'D': Option('Удалить закладку.',
                     commands.DeleteBookmarkCommand(),
-                    prep_call=get_bookmarks_id_for_deletion),
+                    prep_call=get_bookmarks_id_for_deletion,
+                    success_message='Закладка удалена!'),
         'G': Option('Импортировать звёзды GitHub',
                     commands.ImportGitHubStarsCommand(),
-                    prep_call=get_git_hub_import_options),
+                    prep_call=get_git_hub_import_options,
+                    success_message='Импортировано {result} закладок, '
+                                    'из помеченных звёздами репо'),
         'Q': Option('Выйти.', commands.QuitCommand()),
 
         }

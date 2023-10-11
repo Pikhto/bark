@@ -12,13 +12,16 @@ requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.5.1"
+types-requests = "^2.31.0.8"
 
 
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
-exclude = env.*|venv.*
-
+exclude = [
+    'env.*',
+    'venv.*'
+    ]
 
 [build-system]
 requires = ["poetry-core"]

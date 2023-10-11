@@ -41,7 +41,7 @@ class AddBookmarksCommand:
 
 
 class ListBookmarksCommand:
-    def __init__(self, order_by='date_added') -> None:
+    def __init__(self, order_by: str = 'date_added') -> None:
         self.order_by = order_by
 
     def execute(self) -> tuple[bool, list[Any]]:
@@ -94,7 +94,7 @@ class ImportGitHubStarsCommand:
                     timestamp = datetime.datetime.strptime(
                         repo_info['starred_at'],
                         '%Y-%m-%dT%H:%M:%SZ'
-                        )
+                        ).isoformat()
                 else:
                     timestamp = None
                 bookmarks_imported += 1

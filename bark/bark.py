@@ -35,8 +35,8 @@ class Option:
         return self.menu_option
 
 
-def print_option(option: dict[str, Option]) -> None:
-    for shotcut, option in option.items():
+def print_option(options: dict[str, Option]) -> None:
+    for shotcut, option in options.items():
         print(f'({shotcut}) {option}')
     print()
 
@@ -54,14 +54,14 @@ def get_option_choice(options: dict[str, Option]) -> Option:
     return options[user_input.upper()]
 
 
-def get_user_input(label: str, required: bool = True) -> str:
+def get_user_input(label: str, required: bool = True) -> str | None:
     value = input(f'{label}: ') or None
     while required and not value:
         value = input(f'{label}: ') or None
     return value
 
 
-def get_new_bookmark_data() -> dict[str, Callable]:
+def get_new_bookmark_data() -> dict[str, str | None]:
     return {
         'title': get_user_input('Название'),
         'url': get_user_input('URL'),
@@ -69,7 +69,7 @@ def get_new_bookmark_data() -> dict[str, Callable]:
     }
 
 
-def get_bookmarks_id_for_deletion():
+def get_bookmarks_id_for_deletion() -> str | None:
     return get_user_input('Ввести идентификатор закладки для удаления')
 
 
@@ -78,7 +78,7 @@ def clear_screen() -> None:
     os.system(clear)
 
 
-def get_git_hub_import_options() -> dict[str, str]:
+def get_git_hub_import_options() -> dict[str, str | bool | None]:
     return {
         'github_username': get_user_input('Имя пользователя в GitHub'),
         'preserve_timestamp': get_user_input(
@@ -87,7 +87,7 @@ def get_git_hub_import_options() -> dict[str, str]:
     }
 
 
-def get_update_bookmark_data() -> dict[str, str]:
+def get_update_bookmark_data() -> dict[str, str | None]:
     return {
         'id': get_user_input('Введите номер закладки'),
         'title': get_user_input('Название', required=False),
@@ -96,7 +96,7 @@ def get_update_bookmark_data() -> dict[str, str]:
         }
 
 
-def format_bookmark(bookmark):
+def format_bookmark(bookmark: list[str]) -> str:
     return '\t'.join(str(field) if field else ''
                      for field in bookmark)
 

@@ -1,12 +1,9 @@
 import datetime
 import sys
-
 from typing import Any, Protocol
 
 import requests
-
 from database import DataBaseManager
-
 
 db = DataBaseManager('bookmarks.db')
 

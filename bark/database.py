@@ -30,9 +30,9 @@ class DataBaseManager:
         self._execute(stm)
 
     def add(self, table_name: str, data: dict[str, str]) -> None:
-        placeholders: str = ', '.join(('?' * len(data)))
-        column: str = ', '.join(data.keys())
-        column_values: tuple[str] = tuple(data.values())
+        placeholders = ', '.join(('?' * len(data)))
+        column = ', '.join(data.keys())
+        column_values = tuple(data.values())
 
         stm = f'''
               INSERT INTO {table_name}
@@ -61,7 +61,7 @@ class DataBaseManager:
         query = f'SELECT * FROM {table_name}'
 
         if criteria:
-            placeholders: str = [f'{column} = ?' for column in criteria.keys()]
+            placeholders = [f'{column} = ?' for column in criteria.keys()]
             select_criteria = ' AND '.join(placeholders)
             query += f' WHERE {select_criteria}'
 
